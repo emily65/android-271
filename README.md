@@ -1,2 +1,2 @@
 # android-271
-test
+This Project android class 271, and we will create a simple application.

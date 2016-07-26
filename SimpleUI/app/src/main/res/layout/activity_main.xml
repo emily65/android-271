@@ -43,21 +43,22 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:orientation="horizontal"
-        android:id="@+id/radioGroup">
+        android:id="@+id/radioGroup"
+        android:weightSum="1">
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="male"
             android:id="@+id/maleradioButton"
-            android:checked="true" />
+            android:checked="true"
+            android:drawableRight="@drawable/male" />
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="female"
             android:id="@+id/femaleradioButton"
-            android:checked="false" />
+            android:checked="false"
+            android:drawableRight="@drawable/female" />
     </RadioGroup>
 
 </RelativeLayout>

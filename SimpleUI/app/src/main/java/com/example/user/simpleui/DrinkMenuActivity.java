@@ -1,5 +1,7 @@
 package com.example.user.simpleui;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -64,10 +66,22 @@ public class DrinkMenuActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Drink drink = (Drink)parent.getAdapter().getItem(position);
-                drinkOrderList.add(drink);
+                showDrinkOrderDialog(drink);
                 setupTotalTextView();
             }
         });
+    }
+
+    public void showDrinkOrderDialog(Drink drink)
+    {
+        FragmentManager fragmentManager = getFragmentManager();
+
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+
+        DrinkOrderDialog dialog = DrinkOrderDialog.newInstance(drink);
+
+        dialog.show(ft, "DrinOrderDialog");
+
     }
 
     public void setupTotalTextView()

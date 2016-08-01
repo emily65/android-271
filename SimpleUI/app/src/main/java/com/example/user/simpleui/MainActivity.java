@@ -1,7 +1,9 @@
 package com.example.user.simpleui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +37,11 @@ public class MainActivity extends AppCompatActivity {
 
     List<Order> orders = new ArrayList<>();
 
+    ArrayList<DrinkOrder> drinkOrders = new ArrayList<>();
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,10 +53,13 @@ public class MainActivity extends AppCompatActivity {
         listView = (ListView)findViewById(R.id.listView);
         spinner = (Spinner)findViewById(R.id.spinner);
 
+        sharedPreferences = getSharedPreferences("UIState", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                RadioButton radioButton = (RadioButton)group.findViewById(checkedId);
+                RadioButton radioButton = (RadioButton) group.findViewById(checkedId);
                 drink = radioButton.getText().toString();
             }
         });
@@ -57,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         editText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
+                editor.putString("editText", editText.getText().toString());
+                editor.apply();
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
                     submit(v);
                     return true;
@@ -79,10 +91,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                editor.putInt("sp", spinner.getSelectedItemPosition());
+                editor.apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+
         setupListView();
         setupSpinner();
 
+        restoreUIState();
+
         Log.d("debug", "MainActivity OnCreate");
+    }
+
+    private void restoreUIState()
+    {
+        editText.setText(sharedPreferences.getString("editText", ""));
+        spinner.setSelection(sharedPreferences.getInt("sp",0));
     }
 
     private void setupListView()
@@ -99,21 +135,24 @@ public class MainActivity extends AppCompatActivity {
         String[] data = getResources().getStringArray(R.array.storeInfos);
         ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, data);
         spinner.setAdapter(adapter);
+
     }
 
     public void submit(View view)
     {
         String text = editText.getText().toString();
-        String result = text + " order: " + drink;
+        String result = text;
         textView.setText(result);
         editText.setText("");
 
         Order order = new Order();
         order.note = text;
-        order.drink = drink;
+        order.drinkOrders = drinkOrders;
         order.storeInfo = (String)spinner.getSelectedItem();
 
         orders.add(order);
+        drinkOrders = new ArrayList<>();
+
         setupListView();
     }
 
@@ -121,7 +160,8 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent intent = new Intent();
         intent.setClass(this, DrinkMenuActivity.class);
-        startActivity(intent);
+        intent.putExtra("drinkOrderList", drinkOrders);
+        startActivityForResult(intent, REQUEST_CODE_DRINK_MENU_ACTIVITY);
     }
 
     @Override
@@ -131,11 +171,8 @@ public class MainActivity extends AppCompatActivity {
         {
             if(resultCode == RESULT_OK)
             {
+                drinkOrders = data.getParcelableArrayListExtra("results");
                 Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
-            }
-            else
-            {
-
             }
         }
     }

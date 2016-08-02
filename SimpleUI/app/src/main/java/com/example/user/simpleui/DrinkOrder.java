@@ -3,26 +3,38 @@ package com.example.user.simpleui;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.parse.ParseClassName;
+import com.parse.ParseObject;
+
 /**
  * Created by user on 2016/8/1.
  */
-public class DrinkOrder implements Parcelable {
 
-    Drink drink;
-    int mNumber=0;
-    int lNumber=0;
-    String ice="Regular";
-    String sugar="Regular";
-    String note="";
+@ParseClassName("DrinkOrder")
+public class DrinkOrder extends ParseObject implements Parcelable {
+
+    static final String DRINK_COL="drink";
+    //Drink drink;
+    static final String MNUMBER_COL="mNumber";
+    static final String LNUMBER_COL="lNumber";
+    static final String ICE_COL="ice";
+    static final String SUGAR_COL="sugar";
+    static final String NOTE_COL="note";
+
+//    int mNumber=0;
+//    int lNumber=0;
+//    String ice="Regular";
+//    String sugar="Regular";
+//    String note="";
 
     public DrinkOrder(Drink drink)
     {
-        this.drink = drink;
+        this.setDrink(drink);
     }
 
     public int total()
     {
-        return drink.lPrice * lNumber + drink.mPrice * mNumber;
+        return getDrink().lPrice * getlNumber() + getDrink().mPrice * getmNumber();
     }
 
     @Override
@@ -32,27 +44,46 @@ public class DrinkOrder implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(drink, flags);
-        dest.writeInt(mNumber);
-        dest.writeInt(lNumber);
-        dest.writeString(ice);
-        dest.writeString(sugar);
-        dest.writeString(note);
+
+        if(getObjectId() == null)
+        {
+            dest.writeInt(0);
+            dest.writeParcelable(this.getDrink(), flags);
+            dest.writeInt(this.getmNumber());
+            dest.writeInt(this.getlNumber());
+            dest.writeString(this.getIce());
+            dest.writeString(this.getSugar());
+            dest.writeString(this.getNote());
+        }
+        else
+        {
+            dest.writeInt(1);
+            dest.writeString(getObjectId());
+        }
+
     }
 
     protected DrinkOrder(Parcel in) {
-        drink = in.readParcelable(Drink.class.getClassLoader());
-        mNumber = in.readInt();
-        lNumber = in.readInt();
-        ice = in.readString();
-        sugar = in.readString();
-        note = in.readString();
+        this.setDrink(in.readParcelable(Drink.class.getClassLoader()));
+        this.setmNumber(in.readInt());
+        this.setlNumber(in.readInt());
+        this.setIce(in.readString());
+        this.setSugar(in.readString());
+        this.setNote(in.readString());
     }
 
     public static final Creator<DrinkOrder> CREATOR = new Creator<DrinkOrder>() {
         @Override
         public DrinkOrder createFromParcel(Parcel source) {
-            return new DrinkOrder(source);
+            int isDraft = source.readInt();
+            if(isDraft==0)
+            {
+                return new DrinkOrder(source);
+            }
+            else
+            {
+
+            }
         }
 
         @Override
@@ -62,5 +93,51 @@ public class DrinkOrder implements Parcelable {
     };
 
 
+    public Drink getDrink() {
+        return getParseObject(DRINK_COL);
+    }
 
+    public void setDrink(Drink drink) {
+        put(DRINK_COL,drink);
+    }
+
+    public int getmNumber() {
+        return getInt(MNUMBER_COL);
+    }
+
+    public void setmNumber(int mNumber) {
+        put(MNUMBER_COL,mNumber);
+    }
+
+    public int getlNumber() {
+        return getInt(LNUMBER_COL);
+    }
+
+    public void setlNumber(int lNumber) {
+        put(LNUMBER_COL, lNumber);
+    }
+
+    public String getIce() {
+        return getString(ICE_COL);
+    }
+
+    public void setIce(String ice) {
+        put(ICE_COL,ice);
+    }
+
+    public String getSugar() {
+        return getString(SUGAR_COL, sugar);
+    }
+
+    public void setSugar(String sugar) {
+        put();
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 }

@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 /**
@@ -45,31 +47,31 @@ public class DrinkAdapter extends BaseAdapter {
         if(convertView == null)
         {
             convertView = inflater.inflate(R.layout.listview_drink_item, null);
-            TextView drinkNameTextView = (TextView)convertView.findViewById(R.id.drinkNameTextView);
-            TextView lPriceTextView = (TextView)convertView.findViewById(R.id.lPriceTextView);
-            TextView mPriceTextView = (TextView)convertView.findViewById(R.id.mPriceTextView);
-            ImageView imageView = (ImageView)convertView.findViewById(R.id.imageView);
+//            TextView drinkNameTextView = (TextView)convertView.findViewById(R.id.drinkNameTextView);
+//            TextView lPriceTextView = (TextView)convertView.findViewById(R.id.lPriceTextView);
+//            TextView mPriceTextView = (TextView)convertView.findViewById(R.id.mPriceTextView);
+//            ImageView imageView = (ImageView)convertView.findViewById(R.id.imageView);
 
             holder = new Holder();
-            holder.drinkNameTextView = drinkNameTextView;
-            holder.lPriceTextView = lPriceTextView;
-            holder.mPriceTextView = mPriceTextView;
-            holder.imageView = imageView;
+            holder.drinkNameTextView = (TextView)convertView.findViewById(R.id.drinkNameTextView);
+            holder.lPriceTextView = (TextView)convertView.findViewById(R.id.lPriceTextView);
+            holder.mPriceTextView = (TextView)convertView.findViewById(R.id.mPriceTextView);
+            holder.imageView = (ImageView)convertView.findViewById(R.id.imageView);
 
             convertView.setTag(holder);
         }
-        else
-        {
+        else {
             holder = (Holder)convertView.getTag();
         }
 
 
         Drink drink = drinks.get(position);
 
-        holder.drinkNameTextView.setText(drink.name);
-        holder.lPriceTextView.setText(String.valueOf(drink.lPrice));
-        holder.mPriceTextView.setText(String.valueOf(drink.mPrice));
-        holder.imageView.setImageResource(drink.imageId);
+        holder.drinkNameTextView.setText(drink.getName());
+        holder.lPriceTextView.setText(String.valueOf(drink.getlPrice()));
+        holder.mPriceTextView.setText(String.valueOf(drink.getmPrice()));
+        //holder.imageView.setImageResource(drink.imageId);
+        Picasso.with(inflater.getContext()).load(drink.getParseFile().getUrl()).into(holder.imageView);
 
         return convertView;
     }

@@ -89,29 +89,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Order order = (Order) parent.getAdapter().getItem(position);
+                goToOderDetail(order);
 //                Toast.makeText(MainActivity.this, "You click on" + order.note, Toast.LENGTH_SHORT).show();
-                Snackbar.make(parent, "You click on" + order.getNote(), Snackbar.LENGTH_SHORT).setAction("OK", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                }).show();
+//                Snackbar.make(parent, "You click on" + order.getNote(), Snackbar.LENGTH_SHORT).setAction("OK", new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//
+//                    }
+//                }).show();
             }
         });
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                editor.putInt("sp", spinner.getSelectedItemPosition());
-                editor.apply();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//
+//                editor.putInt("sp", spinner.getSelectedItemPosition());
+//                editor.apply();
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
 
         setupOrderHistory();
 //        setupListView();
@@ -149,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
     private void restoreUIState()
     {
         editText.setText(sharedPreferences.getString("editText", ""));
-        spinner.setSelection(sharedPreferences.getInt("sp",0));
+        //spinner.setSelection(sharedPreferences.getInt("sp",0));
     }
 
     private void setupOrderHistory()
@@ -165,22 +166,21 @@ public class MainActivity extends AppCompatActivity {
 //                if(order != null)
 //                    orders.add(order);
 //            }
-//            catch (JsonSyntaxException ignored)
+//            catch (JsonSyntaxException e)
 //            {
-//
+//               e.printStackTrace();
 //            }
 //        }
-
-Order.getOdersFromLocalThenRemote(new FindCallback<Order>() {
-    @Override
-    public void done(List<Order> objects, ParseException e) {
-        if(e == null)
-        {
-            orders = objects;
-            setupListView();
+        Order.getOdersFromLocalThenRemote(new FindCallback<Order>() {
+        @Override
+        public void done(List<Order> objects, ParseException e) {
+            if(e == null)
+            {
+                orders = objects;
+                setupListView();
+            }
         }
-    }
-});
+    });
 
     }
 
@@ -233,6 +233,16 @@ Order.getOdersFromLocalThenRemote(new FindCallback<Order>() {
         intent.setClass(this, DrinkMenuActivity.class);
         intent.putExtra("drinkOrderList", drinkOrders);
         startActivityForResult(intent, REQUEST_CODE_DRINK_MENU_ACTIVITY);
+    }
+
+    public void goToOderDetail(Order order)
+    {
+
+        Intent intent = new Intent();
+        intent.setClass(this, OrderDetailActivity.class);
+        intent.putExtra("order", order);
+        startActivity(intent);
+
     }
 
     @Override
